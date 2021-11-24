@@ -3,9 +3,15 @@ const _ = require('lodash');
 async function transformKLine(exchange, pair, type, data) {
     const hd = [];
     _.forEach(data, a => {
+        if(exchange==='OKEX'){
+            var t = new Date(a[0]).valueOf()
+            // console.log(t)
+        }else {
+            var t = a[0]
+        }
         const instrument_ID = `${exchange}_${pair}_${type}`;
         const l = {
-            time: a[0],
+            time: t,
             exchange: exchange,
             instrument_ID: instrument_ID,
             pair: pair,

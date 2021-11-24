@@ -1,12 +1,13 @@
-const fs = require('fs');
-const { getresult } = require('./utils/huobi');
+const { getBinanceMD } = require('./utils/binance');
+const { getOkexMD } = require('./utils/okex')
 
-function getData(){
-    setInterval(() => {
-        const result = getHuoBiResult();
-        // console.log(result)
-        const t = result[0];
-        console.log(t)
-    }, 1*60*1000);
+
+async function getData(exchange) {
+    const pairs = ['BTC-USDT','ETH-USDT']
+    if (exchange === 'binance') {
+        await getBinanceMD('2021-11-19', '2021-11-23', pairs, 'influx');
+    }else if(exchange==='okex'){
+        await getOkexMD('2021-11-19', '2021-11-23', pairs, 'influx')
+    }
 }
-getData()
+getData('binance')
