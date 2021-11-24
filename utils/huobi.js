@@ -10,25 +10,25 @@ const echarts = require('echarts');
 
 
 
-function getTimeStemp(time){
+function getTimeStemp(time) {
     return new Date(time).getTime();
 }
 
-function getSETime(startTime,endTime,interval,size){
+function getSETime(startTime, endTime, interval, size) {
     const n = new Date().getTime();
     const int = interval * 60 * 1000; //s时间颗粒度
-    const st =  getTimeStemp(startTime);//开始时间
-    const et = endTime==='now'?n:getTimeStemp(time); //结束时间
+    const st = getTimeStemp(startTime);//开始时间
+    const et = endTime === 'now' ? n : getTimeStemp(time); //结束时间
     // console.log(st,et)
     const dataGap = size * int;
-    const number = Math.round((et-st)/dataGap)+1;
+    const number = Math.round((et - st) / dataGap) + 1;
     const time = [];
     for (let index = 0; index < number; index++) {
         const startTime = st - (dataGap * index);
         const endTime = et - (dataGap * index);
-        const sTime = Math.round(startTime/1000);
-        const eTime = Math.round(endTime/1000);
-        const o = {from:sTime,to:eTime};
+        const sTime = Math.round(startTime / 1000);
+        const eTime = Math.round(endTime / 1000);
+        const o = { from: sTime, to: eTime };
         time.push(o);
         // console.log(sTime,eTime)
     }
@@ -37,13 +37,13 @@ function getSETime(startTime,endTime,interval,size){
 }
 
 
-async function getMarketData(){
-    const timeLIst = getSETime('2021-10-5','now',1,120);
-    const pairs = ['BTC-USDT','ETH-USDT'];
+async function getMarketData() {
+    const timeLIst = getSETime('2021-10-5', 'now', 1, 120);
+    const pairs = ['BTC-USDT', 'ETH-USDT'];
     const base = 'http://api.hbdm.com/linear-swap-ex/market/history/kline';
     const allUrl = [];
-    _.forEach(pairs,l=>{
-        _.forEach(timeLIst,m=>{
+    _.forEach(pairs, l => {
+        _.forEach(timeLIst, m => {
             // console.log(l,m.to)
             const url = `${base}?contract_code=${l}&period=1min&size=120&from=${m.from}&to=${m.to}`
             allUrl.push(url);
@@ -52,13 +52,13 @@ async function getMarketData(){
     })
     // console.log(allUrl) 
     const allData = [];
-    _.forEach(allUrl,n=>{
+    _.forEach(allUrl, n => {
         axios.get(n)
-        .then(function(res){
-            const data = res.data;
-            allData.push(data);
-            // console.log(data)
-        })
+            .then(function (res) {
+                const data = res.data;
+                allData.push(data);
+                // console.log(data)
+            })
     })
 
     // return new Promise(resolve=>{
@@ -68,8 +68,8 @@ async function getMarketData(){
     //     return allData
     //     },5000)
     // })
-    var promise = new Promise(function(resolve, reject) {
-        setTimeout(function() {
+    var promise = new Promise(function (resolve, reject) {
+        setTimeout(function () {
             // console.log(allData);
             resolve(allData);
         }, 2000);
@@ -82,43 +82,42 @@ async function getMarketData(){
     // // },5000)
 }
 
-function getHuoBiResult(){
+async function getHuoBiResult() {
 
-getMarketData().then(function(res){
-    const data = res[3];
-    const candle = [];
-    // console.log(data)
-    _.forEach(data,l => {
-        _.forEach(l,n => {
-            // console.log(n)
-            // const type = {id:n.id,open:n.open,close:n.close,low:n.low,high:n.high,amount:n.amount,vol:n.vol,trade_turnover:n.trade_turnover,count:n.count};
-            const k = {time:n.id,open:n.open,close:n.close,low:n.low,high:n.high};
-            // const ks = [{close:'x',open:'xx',time:'ff'},{}]
-            candle.push(k);
-        })
-    });
-    setTimeout(()=>{
-        console.log(candle)
-    },2000);
-    // chart(candle)
-    // echarts.use([GridComponent, CandlestickChart, CanvasRenderer]);
-    // var chartDom = document.getElementById('main');
-    // var myChart = echarts.init(chartDom);
-    // var option;
-    // option = {
-    //     xAxis: {},
-    //     yAxis: {},
-    //     series: [
-    //       {
-    //         type: 'candlestick',
-    //         data: [candle[0]]
-    //       }
-    //     ]
-    //   };
-    //   option && myChart.setOption(option);
-})
+    getMarketData().then(function (res) {
+        const data = res[3];
+        const candle = [];
+        // console.log(data)
+        _.forEach(data, l => {
+            _.forEach(l, n => {
+                // console.log(n)
+                // const type = {id:n.id,open:n.open,close:n.close,low:n.low,high:n.high,amount:n.amount,vol:n.vol,trade_turnover:n.trade_turnover,count:n.count};
+                const k = { time: n.id, open: n.open, close: n.close, low: n.low, high: n.high };
+                // const ks = [{close:'x',open:'xx',time:'ff'},{}]
+                candle.push(k);
+            })
+        });
+        setTimeout(() => {
+            console.log(candle)
+        }, 2000);
+        // chart(candle)
+        // echarts.use([GridComponent, CandlestickChart, CanvasRenderer]);
+        // var chartDom = document.getElementById('main');
+        // var myChart = echarts.init(chartDom);
+        // var option;
+        // option = {
+        //     xAxis: {},
+        //     yAxis: {},
+        //     series: [
+        //       {
+        //         type: 'candlestick',
+        //         data: [candle[0]]
+        //       }
+        //     ]
+        //   };
+        //   option && myChart.setOption(option);
+    })
 }
-getHuoBiResult()
 
 
 
